@@ -1,0 +1,12 @@
+*.iml
+.gradle
+/local.properties
+/.idea
+.DS_Store
+/build
+/captures
+/images
+/app/src/main/res/drawable-xhdpi
+.externalNativeBuild
+.cxx
+local.properties
