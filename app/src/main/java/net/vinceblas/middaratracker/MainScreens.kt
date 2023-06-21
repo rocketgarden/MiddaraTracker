@@ -37,8 +37,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -56,9 +56,8 @@ fun MainScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
-    
+
     MiddaraTrackerTheme {
-        // A surface container using the 'background' color from the theme
         Scaffold(
             topBar = {
                 TopBar(uiState, viewModel)
@@ -66,9 +65,7 @@ fun MainScreen(
             floatingActionButton = {
                 if (uiState.turnList.isNotEmpty() && !uiState.shuffleInProgress) {
                     FloatingActionButton(
-                        onClick =
-                        { scope.launch(Dispatchers.Main) { viewModel.newRound() } }
-
+                        onClick = { scope.launch(Dispatchers.Main) { viewModel.newRound() } }
                     ) {
                         Icon(Icons.Filled.Refresh, "Reshuffle")
                     }
@@ -97,6 +94,7 @@ private fun TopBar(
         title = { Text("Middara Tracker") },
         actions = {
             if (uiState.pickerMode) {
+                // Exit picker mode button
                 IconButton(onClick = {
                     viewModel.endPickerMode()
                 }) {
@@ -106,6 +104,7 @@ private fun TopBar(
                     )
                 }
             } else {
+                // Start picker mode button
                 IconButton(onClick = {
                     viewModel.startPickerMode()
                 }) {
@@ -114,8 +113,9 @@ private fun TopBar(
                         contentDescription = "Pick Combatants"
                     )
                 }
-                if (uiState.selected != null) {
 
+                if (uiState.selected != null) {
+                    // Card is selected, add left/right/delete buttons
                     IconButton(onClick = {
                         viewModel.nudge(uiState.selected, -1)
                     }) {
@@ -151,14 +151,11 @@ private fun TopBar(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TurnCardGrid(uiState: TurnTrackerUiState, viewModel: TurnTrackerViewModel = viewModel()) {
-
     LazyVerticalGrid(
         columns = GridCells.Adaptive(minSize = 160.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp),
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        // some unfortunate-ness here with width/height stuff.
-        // leftover pixels when splitting grid create uneven dimens which adds hairline gaps between images
         val cards = if (uiState.pickerMode) {
             uiState.availableCards
         } else {
@@ -178,20 +175,18 @@ fun TurnCardGrid(uiState: TurnTrackerUiState, viewModel: TurnTrackerViewModel = 
                     )
                     .then(
                         if (combatant == uiState.selected) {
-                            Modifier.border(6.dp, Color.Cyan)
+                            Modifier.border(8.dp, colorResource(id = R.color.pink))
                         } else if (uiState.pickerMode && uiState.turnList.contains(combatant)) {
-                            Modifier.border(4.dp, Color.Blue)
+                            Modifier.border(6.dp, colorResource(id = R.color.light_navy))
                         } else Modifier
                     )
             ) {
-                // 3 x 2, 480x720
                 Image(
                     painter = painterResource(combatant.image),
                     contentDescription = combatant.name,
                     contentScale = ContentScale.Fit,
                     alignment = Alignment.Center
                 )
-
             }
         }
     }
